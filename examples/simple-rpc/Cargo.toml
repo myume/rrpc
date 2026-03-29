@@ -1,7 +1,0 @@
-[package]
-name = "simple-rpc"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-rrpc-macros = { path = "../../rrpc-macros"}
