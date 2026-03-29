@@ -42,7 +42,12 @@ fn gen_stub_method(item: &ImplItem) -> Option<impl ToTokens> {
         return Some(quote! {
             pub #sig {
                 println!("{}", #sig_tokens);
-                // self.stub();
+
+                // 1. create RPC request
+
+                // 2. fire request to server
+
+                // 3. handle response
             }
         });
     }

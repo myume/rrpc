@@ -43,7 +43,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rrpc-types"
+name = "rrpc-proto"
 version = "0.1.0"
 
 [[package]]
