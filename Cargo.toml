@@ -1,6 +1,14 @@
 [package]
-name = "package"
+name = "rrpc"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = [
+    "rrpc-macros",
+    "rrpc-types"
+]
+resolver = "3"
+
 [dependencies]
+rrpc-macros = { path = "./rrpc-macros"}
