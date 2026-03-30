@@ -1,20 +1,19 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{ItemImpl, parse_macro_input};
+use syn::{ItemTrait, parse_macro_input};
 
 mod client;
 mod server;
-mod utils;
 
 #[proc_macro_attribute]
-pub fn rrpc_impl(_attr: TokenStream, input: TokenStream) -> TokenStream {
-    let item_impl = parse_macro_input!(input as ItemImpl);
+pub fn service(_attr: TokenStream, input: TokenStream) -> TokenStream {
+    let trait_def = parse_macro_input!(input as ItemTrait);
 
-    let client = client::gen_client_impl(&item_impl);
-    let server = server::gen_server_impl(&item_impl);
+    let client = client::gen_client_impl(&trait_def);
+    let server = server::gen_server_impl(&trait_def);
 
     quote! {
-        #item_impl
+        #trait_def
         #client
         #server
     }

@@ -1,11 +1,8 @@
 use quote::{ToTokens, format_ident, quote};
-use syn::ItemImpl;
+use syn::ItemTrait;
 
-use crate::utils::type_ident;
-
-pub fn gen_server_impl(item: &ItemImpl) -> impl ToTokens {
-    let ident = type_ident(&item.self_ty).expect("unable to extract interface name");
-    let server_ident = format_ident!("{ident}RpcServer");
+pub fn gen_server_impl(item: &ItemTrait) -> impl ToTokens {
+    let server_ident = format_ident!("{}RpcServer", item.ident);
     quote! {
         pub struct #server_ident {}
 

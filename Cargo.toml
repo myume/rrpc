@@ -6,7 +6,6 @@ edition = "2024"
 [workspace]
 members = [
     "rrpc-macros",
-    "rrpc-proto",
 
     "examples"
 ]

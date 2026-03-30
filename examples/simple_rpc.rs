@@ -1,23 +1,10 @@
-use rrpc_macros::rrpc_impl;
-
-struct Test {}
-
-#[rrpc_impl]
-impl Test {
-    pub fn testing(&self, i: u32) {
-        println!("we're testing here {i}");
-        self.private();
-    }
-
-    fn private(&self) {
-        println!("doing some private work");
-    }
+#[rrpc_macros::service]
+trait Interface {
+    fn test(&self, test: u32);
+    fn test2(&self, i: &str);
 }
 
 fn main() {
-    let test = Test {};
-    test.testing(1);
-    let client = TestRpcClient::new();
-    client.testing(2);
-    let server = TestRpcServer::new();
+    let client = InterfaceRpcClient::new();
+    let server = InterfaceRpcServer::new();
 }

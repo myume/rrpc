@@ -39,13 +39,8 @@ name = "rrpc-macros"
 version = "0.1.0"
 dependencies = [
  "quote",
- "rrpc-proto",
  "syn",
 ]
-
-[[package]]
-name = "rrpc-proto"
-version = "0.1.0"
 
 [[package]]
 name = "syn"
