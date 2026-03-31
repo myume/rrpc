@@ -1,10 +1,15 @@
 use quote::{ToTokens, format_ident, quote};
-use syn::{ItemTrait, TraitItem};
+use syn::{Ident, ItemTrait, PatType, TraitItem};
 
 pub fn gen_client_impl(item: &ItemTrait) -> impl ToTokens {
     let client_ident = format_ident!("{}RpcClient", item.ident);
 
-    let stubs: Vec<_> = item.items.iter().filter_map(gen_stub_method).collect();
+    let enum_ident = format_ident!("{}Call", item.ident);
+    let stubs: Vec<_> = item
+        .items
+        .iter()
+        .filter_map(|func| gen_stub_method(func, &enum_ident))
+        .collect();
 
     quote! {
         pub struct #client_ident {}
@@ -19,19 +24,37 @@ pub fn gen_client_impl(item: &ItemTrait) -> impl ToTokens {
     }
 }
 
-fn gen_stub_method(item: &TraitItem) -> Option<impl ToTokens> {
+fn gen_stub_method(item: &TraitItem, enum_ident: &Ident) -> Option<impl ToTokens> {
     if let TraitItem::Fn(func) = item {
         let sig = &func.sig;
-        for arg in &sig.inputs {
-            match arg {
-                syn::FnArg::Receiver(receiver) => {}
-                syn::FnArg::Typed(pat_type) => {}
-            }
-        }
+        let params: Vec<_> = sig
+            .inputs
+            .iter()
+            .enumerate()
+            .filter_map(|(i, arg)| match arg {
+                syn::FnArg::Typed(PatType { pat, .. }) => match pat.as_ref() {
+                    syn::Pat::Ident(pat_ident) => {
+                        let param_ident = format_ident!("param_{i}");
+                        let param = quote! {
+                            #param_ident: #pat_ident
+                        };
+                        Some(param)
+                    }
+                    _ => None,
+                },
+                _ => None,
+            })
+            .collect();
+
+        let variant_name = format_ident!("Variant{}", sig.ident);
+        let variant_instance = quote! {
+            #enum_ident::#variant_name { #(#params),* }
+        };
 
         return Some(quote! {
             pub #sig {
                 // 1. create RPC request
+                let call = #variant_instance;
 
                 // 2. fire request to server
 
