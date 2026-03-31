@@ -5,7 +5,8 @@ edition = "2024"
 
 [dev-dependencies]
 rrpc-macros = { path = "../rrpc-macros"}
+# serde.workspace = true
 
 [[example]]
 name = "simple-rpc"
-path = "simple_rpc.rs"
+path = "simple-rpc.rs"

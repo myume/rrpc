@@ -46,7 +46,7 @@ fn function_call_enum(item: &ItemTrait) -> impl ToTokens {
                     })
                     .collect();
 
-                let variant_name = &trait_item_fn.sig.ident;
+                let variant_name = format_ident!("Variant{}", trait_item_fn.sig.ident);
                 let variant = quote! {
                     #variant_name {
                         #(#params,)*
@@ -58,7 +58,7 @@ fn function_call_enum(item: &ItemTrait) -> impl ToTokens {
         })
         .collect();
 
-    let enum_name = format_ident!("{}FunctionCall", item.ident);
+    let enum_name = format_ident!("{}Call", item.ident);
     let function_calls = quote! {
         pub enum #enum_name {
             #(#enum_items,)*
