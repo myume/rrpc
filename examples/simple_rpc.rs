@@ -1,7 +1,8 @@
 #[rrpc_macros::service]
 trait Interface {
     fn test(&self, test: u32);
-    fn test2(&self, i: &str);
+    fn test2(&self, i: String);
+    fn test3(&self, i: String, j: usize, k: usize);
 }
 
 fn main() {

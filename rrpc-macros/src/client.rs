@@ -24,12 +24,8 @@ fn gen_stub_method(item: &TraitItem) -> Option<impl ToTokens> {
         let sig = &func.sig;
         for arg in &sig.inputs {
             match arg {
-                syn::FnArg::Receiver(receiver) => {
-                    println!("receiver: {}", receiver.to_token_stream());
-                }
-                syn::FnArg::Typed(pat_type) => {
-                    println!("typed: {}", pat_type.to_token_stream());
-                }
+                syn::FnArg::Receiver(receiver) => {}
+                syn::FnArg::Typed(pat_type) => {}
             }
         }
 
