@@ -34,9 +34,10 @@ fn function_call_enum(item: &ItemTrait) -> impl ToTokens {
         .collect();
 
     let enum_ident = format_ident!("{}Call", item.ident);
+    let trait_generics = &item.generics;
     let function_calls = quote! {
         #[derive(Debug)]
-        pub enum #enum_ident {
+        pub enum #enum_ident #trait_generics {
             #(#enum_variants,)*
         }
     };

@@ -3,6 +3,7 @@
   rust-analyzer,
   rustfmt,
   clippy,
+  cargo-expand,
   cargo,
   rustc,
   rustPlatform,
@@ -14,6 +15,7 @@ mkShell {
     rustfmt
     rust-analyzer
     clippy
+    cargo-expand
   ];
 
   env.RUST_SRC_PATH = "${rustPlatform.rustLibSrc}";

@@ -11,57 +11,64 @@ pub fn gen_client_impl(item: &ItemTrait) -> impl ToTokens {
         .filter_map(|func| gen_stub_method(func, &enum_ident))
         .collect();
 
+    let trait_ident = &item.ident;
+    let trait_generics = &item.generics;
     quote! {
-        pub struct #client_ident {}
+        pub struct #client_ident {
+            stub: ClientStub
+        }
 
         impl #client_ident {
             pub fn new() -> Self {
                 Self {}
             }
 
+        }
+
+        impl #trait_generics #trait_ident #trait_generics for #client_ident {
             #(#stubs)*
         }
     }
 }
 
 fn gen_stub_method(item: &TraitItem, enum_ident: &Ident) -> Option<impl ToTokens> {
-    if let TraitItem::Fn(func) = item {
-        let sig = &func.sig;
-        let params: Vec<_> = sig
-            .inputs
-            .iter()
-            .enumerate()
-            .filter_map(|(i, arg)| match arg {
-                syn::FnArg::Typed(PatType { pat, .. }) => match pat.as_ref() {
-                    syn::Pat::Ident(pat_ident) => {
-                        let param_ident = format_ident!("param_{i}");
-                        let param = quote! {
-                            #param_ident: #pat_ident
-                        };
-                        Some(param)
-                    }
-                    _ => None,
-                },
+    let TraitItem::Fn(func) = item else {
+        return None;
+    };
+
+    let sig = &func.sig;
+    let params: Vec<_> = sig
+        .inputs
+        .iter()
+        .enumerate()
+        .filter_map(|(i, arg)| match arg {
+            syn::FnArg::Typed(PatType { pat, .. }) => match pat.as_ref() {
+                syn::Pat::Ident(pat_ident) => {
+                    let param_ident = format_ident!("param_{i}");
+                    let param = quote! {
+                        #param_ident: #pat_ident
+                    };
+                    Some(param)
+                }
                 _ => None,
-            })
-            .collect();
+            },
+            _ => None,
+        })
+        .collect();
 
-        let variant_name = format_ident!("Variant{}", sig.ident);
-        let variant_instance = quote! {
-            #enum_ident::#variant_name { #(#params),* }
-        };
+    let variant_name = format_ident!("Variant{}", sig.ident);
+    let variant = quote! {
+        #enum_ident::#variant_name { #(#params),* }
+    };
 
-        return Some(quote! {
-            pub #sig {
-                // 1. create RPC request
-                let call = #variant_instance;
+    Some(quote! {
+        #sig {
+            // 1. create RPC request
+            let call = #variant;
 
-                // 2. fire request to server
+            // 2. fire request to server
 
-                // 3. handle response
-            }
-        });
-    }
-
-    None
+            // 3. handle response
+        }
+    })
 }
