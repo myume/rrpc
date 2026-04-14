@@ -1,0 +1,8 @@
+[package]
+name = "rrpc"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rrpc-macros = { path = "../rrpc-macros" }
+rrpc-core = { path = "../rrpc-core" }

@@ -3,9 +3,10 @@ name = "examples"
 version = "0.1.0"
 edition = "2024"
 
-[dev-dependencies]
-rrpc-macros = { path = "../rrpc-macros"}
-# serde.workspace = true
+[dependencies]
+rrpc = { path = "../rrpc" }
+serde.workspace = true
+tokio = { workspace = true, features = ["full"]}
 
 [[example]]
 name = "simple-rpc"

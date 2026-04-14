@@ -11,21 +11,20 @@ pub fn gen_client_impl(item: &ItemTrait) -> impl ToTokens {
         .filter_map(|func| gen_stub_method(func, &enum_ident))
         .collect();
 
-    let trait_ident = &item.ident;
-    let trait_generics = &item.generics;
     quote! {
         pub struct #client_ident {
-            stub: ClientStub
+            #[doc(hidden)]
+            stub: ::rrpc::__internal::ClientStub<String>
         }
 
         impl #client_ident {
-            pub fn new() -> Self {
-                Self {}
+            pub fn new(conn: &str) -> Self {
+                Self {
+                    stub: ::rrpc::__internal::ClientStub::new(conn.to_owned())
+                }
             }
 
-        }
 
-        impl #trait_generics #trait_ident #trait_generics for #client_ident {
             #(#stubs)*
         }
     }
@@ -36,7 +35,9 @@ fn gen_stub_method(item: &TraitItem, enum_ident: &Ident) -> Option<impl ToTokens
         return None;
     };
 
-    let sig = &func.sig;
+    let mut sig = func.sig.clone();
+    sig.asyncness = Some(syn::token::Async::default());
+
     let params: Vec<_> = sig
         .inputs
         .iter()
@@ -62,11 +63,12 @@ fn gen_stub_method(item: &TraitItem, enum_ident: &Ident) -> Option<impl ToTokens
     };
 
     Some(quote! {
-        #sig {
+        pub #sig {
             // 1. create RPC request
             let call = #variant;
 
             // 2. fire request to server
+            self.stub.send(call).await
 
             // 3. handle response
         }
