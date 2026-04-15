@@ -26,19 +26,23 @@ impl<S: ToSocketAddrs> ClientStub<S> {
     }
 }
 
-#[derive(Default)]
-pub struct ServerStub {}
+pub struct ServerStub {
+    listener: TcpListener,
+}
 
 impl ServerStub {
-    pub async fn listen<S, T, F>(&self, addr: S, handler: F)
+    pub async fn bind<S: ToSocketAddrs>(addr: S) -> Self {
+        let listener = TcpListener::bind(addr).await.unwrap();
+        Self { listener }
+    }
+
+    pub async fn listen_with<T, F>(&self, handler: F)
     where
-        S: ToSocketAddrs,
         T: DeserializeOwned + Send + 'static,
         F: Fn(T) -> Vec<u8> + Send + Clone + 'static,
     {
-        let listener = TcpListener::bind(addr).await.unwrap();
         loop {
-            let (mut stream, _) = listener.accept().await.unwrap();
+            let (mut stream, _) = self.listener.accept().await.unwrap();
             let handler = handler.clone();
             tokio::spawn(async move {
                 let len = stream.read_u32().await.unwrap() as usize;

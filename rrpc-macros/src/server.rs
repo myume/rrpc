@@ -6,19 +6,18 @@ pub fn gen_server_impl(item: &ItemTrait) -> impl ToTokens {
     let trait_name = &item.ident;
     let dispatcher = call_dispatcher(item);
     quote! {
-        pub struct #server_ident<T: #trait_name + Send + Sync + 'static> {
-            imp: ::std::sync::Arc<T>,
+        pub struct #server_ident {
+            stub: ::rrpc::__internal::ServerStub
         }
-        impl<T: #trait_name + Send + Sync + 'static> #server_ident<T> {
-            pub fn new(imp: T) -> Self {
+        impl #server_ident {
+            pub async fn bind(addr: &str) -> Self {
                 Self {
-                    imp: ::std::sync::Arc::new(imp),
+                    stub: ::rrpc::__internal::ServerStub::bind(addr.to_owned()).await
                 }
             }
-            pub async fn listen(&self, addr: &str) {
-                let imp = ::std::sync::Arc::clone(&self.imp);
-                let stub = ::rrpc::__internal::ServerStub::default();
-                stub.listen(addr.to_owned(), move |call| {
+            pub async fn listen<T: #trait_name + Send + Sync + 'static>(&mut self, imp: T) {
+                let imp = ::std::sync::Arc::new(imp);
+                self.stub.listen_with(move |call| {
                     #dispatcher
                 }).await;
             }

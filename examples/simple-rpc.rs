@@ -27,10 +27,10 @@ impl Interface for InterfaceImpl {
 async fn main() {
     let addr = "127.0.0.1:3000";
     let client = InterfaceRpcClient::new(addr);
-    let server = InterfaceRpcServer::new(InterfaceImpl::default());
+    let mut server = InterfaceRpcServer::bind(addr).await;
 
     tokio::spawn(async move {
-        server.listen(addr).await;
+        server.listen(InterfaceImpl::default()).await;
     });
 
     assert_eq!(client.test(3).await, 4);
