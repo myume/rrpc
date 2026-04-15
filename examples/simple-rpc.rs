@@ -1,16 +1,39 @@
 use serde::{Deserialize, Serialize};
 
 #[rrpc::service]
-trait Interface {
+pub trait Interface: Send + Sync {
     fn test(&self, test: u32) -> u32;
-    fn test2(&self, i: String);
-    fn test3(&self, i: String, j: usize, k: Option<u32>);
+    fn test2(&self, i: String) -> String;
+    fn test3(&self, a: u32, b: u32) -> u32;
+}
+
+#[derive(Default)]
+pub struct InterfaceImpl {}
+impl Interface for InterfaceImpl {
+    fn test(&self, i: u32) -> u32 {
+        i + 1
+    }
+
+    fn test2(&self, _: String) -> String {
+        "World".into()
+    }
+
+    fn test3(&self, a: u32, b: u32) -> u32 {
+        a * a + b * b
+    }
 }
 
 #[tokio::main]
 async fn main() {
-    let client = InterfaceRpcClient::new("127.0.0.1:3000");
-    let server = InterfaceRpcServer::new();
+    let addr = "127.0.0.1:3000";
+    let client = InterfaceRpcClient::new(addr);
+    let server = InterfaceRpcServer::new(InterfaceImpl::default());
 
-    let res = client.test(32).await;
+    tokio::spawn(async move {
+        server.listen(addr).await;
+    });
+
+    assert_eq!(client.test(3).await, 4);
+    assert_eq!(client.test2("Hello".into()).await, "World");
+    assert_eq!(client.test3(2, 3).await, 13);
 }

@@ -203,6 +203,7 @@ dependencies = [
 name = "rrpc"
 version = "0.1.0"
 dependencies = [
+ "postcard",
  "rrpc-core",
  "rrpc-macros",
 ]

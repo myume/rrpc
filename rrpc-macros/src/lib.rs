@@ -39,7 +39,7 @@ fn func_variants(item: &ItemTrait) -> impl ToTokens {
     let trait_generics = &item.generics;
     let variants = quote! {
         #[derive(Debug, Serialize, Deserialize)]
-        pub enum #enum_ident #trait_generics {
+        pub enum #enum_ident #trait_generics{
             #(#enum_variants,)*
         }
     };
