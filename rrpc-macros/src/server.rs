@@ -10,9 +10,9 @@ pub fn gen_server_impl(item: &ItemTrait) -> impl ToTokens {
             stub: ::rrpc::__internal::ServerStub
         }
         impl #server_ident {
-            pub async fn bind(addr: &str) -> Self {
+            pub async fn bind<S: ::rrpc::__internal::tokio::net::ToSocketAddrs>(addr: S) -> Self {
                 Self {
-                    stub: ::rrpc::__internal::ServerStub::bind(addr.to_owned()).await
+                    stub: ::rrpc::__internal::ServerStub::bind(addr).await
                 }
             }
             pub async fn listen<T: #trait_name + Send + Sync + 'static>(&mut self, imp: T) {

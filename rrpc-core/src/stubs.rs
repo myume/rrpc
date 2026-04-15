@@ -2,18 +2,12 @@ use serde::{Serialize, de::DeserializeOwned};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream, ToSocketAddrs};
 
-pub struct ClientStub<S: ToSocketAddrs> {
-    addr: S,
-}
+pub struct ClientStub {}
 
-impl<S: ToSocketAddrs> ClientStub<S> {
-    pub fn new(conn: S) -> Self {
-        ClientStub { addr: conn }
-    }
-
+impl ClientStub {
     // TODO: handle errors properly
-    pub async fn send<R: DeserializeOwned, T: Serialize>(&self, call: T) -> R {
-        let mut stream = TcpStream::connect(&self.addr).await.unwrap();
+    pub async fn send<S: ToSocketAddrs, R: DeserializeOwned, T: Serialize>(addr: S, call: T) -> R {
+        let mut stream = TcpStream::connect(addr).await.unwrap();
 
         let bytes = postcard::to_allocvec(&call).unwrap();
         stream.write_u32(bytes.len() as u32).await.unwrap();

@@ -206,6 +206,7 @@ dependencies = [
  "rrpc-core",
  "rrpc-macros",
  "serde",
+ "tokio",
 ]
 
 [[package]]

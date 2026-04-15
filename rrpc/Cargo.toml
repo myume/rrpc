@@ -9,3 +9,4 @@ rrpc-core = { path = "../rrpc-core" }
 
 postcard.workspace = true
 serde.workspace = true
+tokio.workspace = true

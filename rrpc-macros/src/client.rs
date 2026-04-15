@@ -11,16 +11,17 @@ pub fn gen_client_impl(item: &ItemTrait) -> impl ToTokens {
         .filter_map(|func| gen_stub_method(func, &enum_ident))
         .collect();
 
+    let generics = quote! { <S: ::rrpc::__internal::tokio::net::ToSocketAddrs> };
+
     quote! {
-        pub struct #client_ident {
-            #[doc(hidden)]
-            stub: ::rrpc::__internal::ClientStub<String>
+        pub struct #client_ident #generics{
+            server_addr: S
         }
 
-        impl #client_ident {
-            pub fn new(conn: &str) -> Self {
+        impl #generics #client_ident<S>{
+            pub fn new(addr: S) -> Self {
                 Self {
-                    stub: ::rrpc::__internal::ClientStub::new(conn.to_owned())
+                    server_addr: addr
                 }
             }
 
@@ -68,7 +69,7 @@ fn gen_stub_method(item: &TraitItem, enum_ident: &Ident) -> Option<impl ToTokens
             let call = #variant;
 
             // 2. fire request to server
-            self.stub.send(call).await
+            ::rrpc::__internal::ClientStub::send(&self.server_addr, call).await
 
             // 3. handle response
         }
