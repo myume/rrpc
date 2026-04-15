@@ -8,3 +8,4 @@ rrpc-macros = { path = "../rrpc-macros" }
 rrpc-core = { path = "../rrpc-core" }
 
 postcard.workspace = true
+serde.workspace = true

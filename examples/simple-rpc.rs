@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 #[rrpc::service]
 pub trait Interface: Send + Sync {
     fn test(&self, test: u32) -> u32;

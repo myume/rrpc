@@ -38,7 +38,8 @@ fn func_variants(item: &ItemTrait) -> impl ToTokens {
     let enum_ident = format_ident!("{}Call", item.ident);
     let trait_generics = &item.generics;
     let variants = quote! {
-        #[derive(Debug, Serialize, Deserialize)]
+        #[derive(Debug, ::rrpc::__internal::serde::Serialize, ::rrpc::__internal::serde::Deserialize)]
+        #[serde(crate = "::rrpc::__internal::serde")]
         pub enum #enum_ident #trait_generics{
             #(#enum_variants,)*
         }

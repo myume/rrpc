@@ -4,4 +4,5 @@ pub use rrpc_macros::service;
 pub mod __internal {
     pub use postcard;
     pub use rrpc_core::stubs::{ClientStub, ServerStub};
+    pub use serde;
 }
