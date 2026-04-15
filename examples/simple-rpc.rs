@@ -25,7 +25,7 @@ impl Interface for InterfaceImpl {
 async fn main() {
     let addr = "127.0.0.1:3000";
     let client = InterfaceRpcClient::new(addr);
-    let mut server = InterfaceRpcServer::bind(addr).await;
+    let mut server = InterfaceRpcServer::bind(addr).await.unwrap();
 
     tokio::spawn(async move {
         server.listen(InterfaceImpl::default()).await;

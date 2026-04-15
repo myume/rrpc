@@ -1,3 +1,5 @@
+use std::io;
+
 use serde::{Serialize, de::DeserializeOwned};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream, ToSocketAddrs};
@@ -25,9 +27,9 @@ pub struct ServerStub {
 }
 
 impl ServerStub {
-    pub async fn bind<S: ToSocketAddrs>(addr: S) -> Self {
-        let listener = TcpListener::bind(addr).await.unwrap();
-        Self { listener }
+    pub async fn bind<S: ToSocketAddrs>(addr: S) -> io::Result<Self> {
+        let listener = TcpListener::bind(addr).await?;
+        Ok(Self { listener })
     }
 
     pub async fn listen_with<T, F>(&self, handler: F)
