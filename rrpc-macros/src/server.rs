@@ -15,11 +15,11 @@ pub fn gen_server_impl(item: &ItemTrait) -> impl ToTokens {
                     stub: ::rrpc::__internal::ServerStub::bind(addr).await?
                 })
             }
-            pub async fn listen<T: #trait_name + Send + Sync + 'static>(&mut self, imp: T) {
+            pub async fn listen<T: #trait_name + Send + Sync + 'static>(&mut self, imp: T) -> ::rrpc::Result<()> {
                 let imp = ::std::sync::Arc::new(imp);
                 self.stub.listen_with(move |call| {
                     #dispatcher
-                }).await;
+                }).await
             }
         }
     }
@@ -61,7 +61,7 @@ fn variant_handler(trait_item_fn: &TraitItemFn, enum_ident: &Ident) -> impl ToTo
     quote! {
         #enum_ident::#variant_name { #(#params,)* } => {
             let res = imp.#func(#(#params,)*);
-            ::rrpc::__internal::postcard::to_allocvec(&res).unwrap()
+            ::rrpc::__internal::postcard::to_allocvec(&res)
         }
     }
 }

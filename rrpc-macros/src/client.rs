@@ -39,6 +39,12 @@ fn gen_stub_method(item: &TraitItem, enum_ident: &Ident) -> Option<impl ToTokens
     let mut sig = func.sig.clone();
     sig.asyncness = Some(syn::token::Async::default());
 
+    let return_type = match sig.output {
+        syn::ReturnType::Default => quote! {()},
+        syn::ReturnType::Type(_, ty) => quote! {#ty},
+    };
+    sig.output = syn::ReturnType::Default;
+
     let params: Vec<_> = sig
         .inputs
         .iter()
@@ -64,14 +70,8 @@ fn gen_stub_method(item: &TraitItem, enum_ident: &Ident) -> Option<impl ToTokens
     };
 
     Some(quote! {
-        pub #sig {
-            // 1. create RPC request
-            let call = #variant;
-
-            // 2. fire request to server
-            ::rrpc::__internal::ClientStub::send(&self.server_addr, call).await
-
-            // 3. handle response
+        pub #sig -> ::rrpc::Result<#return_type>{
+            ::rrpc::__internal::ClientStub::send(&self.server_addr, #variant).await
         }
     })
 }

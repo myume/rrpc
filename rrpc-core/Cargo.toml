@@ -7,3 +7,5 @@ edition = "2024"
 serde.workspace = true
 postcard.workspace = true
 tokio = { workspace = true, features = ["full"] }
+thiserror.workspace = true
+log.workspace = true

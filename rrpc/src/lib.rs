@@ -1,3 +1,4 @@
+pub use rrpc_core::stubs::{Result, RpcError};
 pub use rrpc_macros::service;
 
 #[doc(hidden)]
